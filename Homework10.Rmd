@@ -1,0 +1,81 @@
+---
+title: "Homework10"
+author: "Joseph Trembley"
+date: "4/16/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Homework 10
+
+Github Repo: https://github.com/trembleyjr/Homework10
+
+```{r}
+library(tidyverse)
+accident = read_csv('accident.csv')
+person = read_csv('person.csv')
+vehicle = read_csv('vehicle.csv')
+```
+
+```{r}
+accident %>% ggplot(aes(x = LATITUDE, y = LONGITUD)) + geom_point()
+```
+
+Part 1: Accident Data
+
+```{r}
+accident %>% group_by(DAY_WEEK) %>% summarise(n = n())
+```
+
+The weekends appear to have slightly more accidents than the weekdays.
+
+```{r}
+accident %>% group_by(HOUR) %>% summarise(n = n())
+```
+
+The accidents are fairly spread out through the day, with the fewest happening in the early morning and most happening late at night.
+
+```{r}
+accident %>% group_by(DRUNK_DR) %>% summarise(n = n())
+```
+
+```{r}
+1 - count(accident %>% filter(DRUNK_DR == 0)) / count(accident)
+```
+
+There were 8720 accidents involving drunk drivers, approximately 25.32% of the total accidents.
+
+Part 2: Connecting Data
+
+```{r}
+person_filter = person %>% filter(PER_TYP == 1)
+v_acc = vehicle %>% inner_join(accident, by = c("ST_CASE", "STATE", "VE_FORMS")) %>% inner_join(person_filter, by = c("ST_CASE", "STATE", "VEH_NO", "VE_FORMS"))
+```
+
+```{r}
+v_acc %>% group_by(DAY_WEEK) %>% summarise(n = n())
+```
+
+```{r}
+v_acc %>% ggplot(aes(x = DAY_WEEK)) + geom_histogram() + coord_flip()
+```
+```{r}
+v_acc %>% group_by(HOUR) %>% summarise(n = n())
+```
+
+
+```{r}
+v_acc %>% ggplot(aes(x = HOUR)) + geom_histogram() + coord_flip()
+```
+
+```{r}
+v_acc %>% group_by(SEX) %>% summarise(n = n())
+```
+
+```{r}
+v_acc %>% ggplot(aes(x = SEX)) + geom_histogram() + coord_flip()
+```
+
